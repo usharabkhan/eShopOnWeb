@@ -76,7 +76,14 @@ jobs:
       uses: azure/login@v2
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-           
+
+    - name: Debug environment values
+      run: |
+          echo "SUBSCRIPTION-ID=${{ env.SUBSCRIPTION-ID }}"
+          echo "RESOURCE-GROUP=${{ env.RESOURCE-GROUP }}"
+          echo "WEBAPP-NAME=${{ env.WEBAPP-NAME }}"
+          echo "LOCATION=${{ env.LOCATION }}"
+
     # Deploy Azure WebApp using Bicep file
     - name: deploy
       uses: azure/arm-deploy@v2
@@ -85,7 +92,8 @@ jobs:
         resourceGroupName: ${{ env.RESOURCE-GROUP }}
         template: bicep-template/webapp.bicep
         parameters: 'webAppName=${{ env.WEBAPP-NAME }} location=${{ env.LOCATION }}'
-        failOnStdErr: false   
+        failOnStdErr: false
+        additionalArguments: '--verbose'
     
     # Publish website to Azure App Service (WebApp)
     # Step disabled due to issue where the site sometimes can't be found: https://github.com/microsoft/pipelines-appservice-lib/issues/56. Instead deploy using CLI
